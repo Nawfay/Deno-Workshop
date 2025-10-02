@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Joke App</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0/dist/full.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="card w-full max-w-md bg-white shadow-2xl border border-gray-100">
+        <div class="card-body text-center p-8">
+            <!-- Fun header with emoji -->
+            <div class="mb-6">
+                <div class="text-6xl mb-4">🎭</div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Joke Time!</h1>
+                <p class="text-gray-600">Get ready to laugh!</p>
+            </div>
+
+            <!-- Joke display area with nice styling -->
+            <div id="joke-display"
+                class="bg-gray-50 rounded-lg p-6 mb-6 min-h-[120px] flex items-center justify-center border-2 border-dashed border-gray-200">
+                <p class="text-gray-500 text-lg">Click the button to get a joke! 😊</p>
+            </div>
+
+            <!-- Big colorful button -->
+            <button id="joke-button" class="btn btn-primary btn-lg w-full">
+                <span class="text-2xl mr-2">😄</span>
+                Get a Joke!
+            </button>
+
+            <!-- Fun footer -->
+            <div class="mt-6 text-sm text-gray-500">
+                <p>Powered by your awesome API! 🚀</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // This is where our API lives
+        const API_URL = "http://localhost:8000/jokes";
+
+        // Get the button and joke display area
+        const button = document.getElementById('joke-button');
+        const jokeDisplay = document.getElementById('joke-display');
+
+        // Function to get a joke from our API
+        async function getJoke() {
+            // Show loading message with animation
+            jokeDisplay.innerHTML = `
+                <div class="flex items-center justify-center">
+                    <span class="loading loading-spinner loading-md text-primary mr-3"></span>
+                    <p class="text-blue-600 text-lg">Getting a joke...</p>
+                </div>
+            `;
+            button.disabled = true;
+            button.classList.add('loading');
+
+            try {
+                // Ask our API for a joke
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                // Show the joke with nice styling
+                jokeDisplay.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-3xl mb-3">😂</div>
+                        <p class="text-xl font-bold text-gray-800 leading-relaxed">${data.joke}</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                // If something goes wrong, show a friendly error
+                jokeDisplay.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-3xl mb-3">😅</div>
+                        <p class="text-red-500 text-lg">Oops! Could not get a joke.</p>
+                        <p class="text-gray-500 text-sm mt-2">Is your server running?</p>
+                    </div>
+                `;
+            }
+
+            // Re-enable the button
+            button.disabled = false;
+            button.classList.remove('loading');
+        }
+
+        // When someone clicks the button, get a joke
+        button.addEventListener('click', getJoke);
+
+        // Add some fun interactions
+        button.addEventListener('mouseenter', () => {
+            if (!button.disabled) {
+                button.classList.add('btn-secondary');
+                button.classList.remove('btn-primary');
+            }
+        });
+
+        button.addEventListener('mouseleave', () => {
+            if (!button.disabled) {
+                button.classList.add('btn-primary');
+                button.classList.remove('btn-secondary');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
